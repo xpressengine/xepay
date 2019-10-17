@@ -1,0 +1,29 @@
+{
+  "name": "xehub/xepay",
+  "type": "library",
+  "license": "LGPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "XE Developers",
+      "email": "developers@xpressengine.com",
+      "homepage": "https://www.xpressengine.io",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Xehub\\Xepay": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Xehub\\Xepay\\PaymentServiceProvider"
+      ]
+    }
+  },
+  "require": {
+    "laravel/framework": "^5.5",
+    "paypal/rest-api-sdk-php": "^1.14"
+  }
+}
