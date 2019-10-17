@@ -12,7 +12,7 @@
   ],
   "autoload": {
     "psr-4": {
-      "Xehub\\Xepay": "src/"
+      "Xehub\\Xepay\\": "src/"
     }
   },
   "extra": {
