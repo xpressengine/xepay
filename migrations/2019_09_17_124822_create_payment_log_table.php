@@ -13,13 +13,14 @@ class CreatePaymentLogTable extends Migration
      */
     public function up()
     {
-        Schema::create('payment_log', function (Blueprint $table) {
+        Schema::create('xepay_payment_log', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('pg', 50);
             $table->string('oid')->index();
             $table->string('tid')->index();
             $table->string('type', 100);
             $table->string('method')->nullable();
+            $table->string('currency', 10);
             $table->float('amount');
             $table->boolean('success')->default(0);
             $table->text('response');
@@ -37,6 +38,6 @@ class CreatePaymentLogTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payment_log');
+        Schema::dropIfExists('xepay_payment_log');
     }
 }

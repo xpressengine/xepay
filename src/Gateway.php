@@ -4,9 +4,11 @@ namespace Xehub\Xepay;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Xehub\Xepay\Events\Paid;
 use Xehub\Xepay\Events\PaymentRolledBack;
+use Xehub\Xepay\Events\Rendering;
 use Xehub\Xepay\Exceptions\PaymentFailedException;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
+use Xehub\Xepay\Merchants\Zero\ZeroMerchant;
 
 class Gateway
 {
@@ -47,6 +49,22 @@ class Gateway
         $this->createLog(PaymentLog::TYPE_PAY, $this->response = $this->pg->approve($request));
 
         return $this->response;
+    }
+
+    public function render(Order $order, $data = [], Money $money = null)
+    {
+        // 결제단계에서 쿠폰, 포인트 등으로 최종 결제금액이 변동되는 경우
+        // 이벤트처리 단계에서 해당하는 처리를 한 후의 최종금액을 사용하도록 함.
+        static::getEventDispatcher()->dispatch($event = new Rendering($this, $order, $data, $money));
+
+        $money = $event->money;
+
+        if ($money && $money->getAmount() === 0) {
+            return (new static('zero', new ZeroMerchant(), $this->provider))
+                ->render($order, $data, $money);
+        }
+
+        return $this->pg->render($order, $data, $money);
     }
 
     protected function createLog($type, Response $response, PaymentLog $parent = null)

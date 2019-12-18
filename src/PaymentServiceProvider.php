@@ -12,7 +12,9 @@ class PaymentServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'xepay');
 
-        $this->loadMigrationsFrom(__DIR__.'/../migrations');
+        if ($this->app->runningInConsole()) {
+            $this->loadMigrationsFrom(__DIR__ . '/../migrations');
+        }
 
         $this->app['blade.compiler']->directive('paying', function ($expression) {
             return "<?php echo app('xepay')->generate({$expression}); ?>";

@@ -25,11 +25,6 @@ interface Order
     public function getItemCount();
 
     /**
-     * @return Buyer
-     */
-    public function getBuyer();
-
-    /**
      * @return string|null
      */
     public function getTransactionId();

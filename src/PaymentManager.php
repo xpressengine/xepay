@@ -12,15 +12,13 @@ use Xehub\Xepay\Merchants\Zero\ZeroMerchant;
 
 class PaymentManager
 {
+    use CreateOrderProviders;
+
     protected $app;
 
     protected $gateways = [];
 
     protected $customCreators = [];
-
-    protected $providerCreators = [];
-
-    protected $providers = [];
 
     public function __construct(Application $app)
     {
@@ -110,7 +108,7 @@ class PaymentManager
     public function approve(Request $request, Order $order)
     {
         $gateway = $this->findGateway($request);
-        if ($gateway->getName() === 'zero') {
+        if (in_array($gateway->getName(), ['zero', 'test'])) {
             $gateway->setOrder($order);
         }
 
@@ -136,36 +134,6 @@ class PaymentManager
     public function __call($method, $parameters)
     {
         return call_user_func_array([$this->gateway(), $method], $parameters);
-    }
-
-    public function provider($name, \Closure $callback)
-    {
-        $this->providerCreators[$name] = $callback;
-    }
-
-    protected function createProvider($name)
-    {
-        if (!isset($this->providerCreators[$name])) {
-            throw new InvalidArgumentException("Unknown provider [$name]");
-        }
-
-        return call_user_func($this->providerCreators[$name]);
-    }
-
-    protected function getProvider($name = null)
-    {
-        $name = $name ?: $this->getDefaultProvider();
-
-        if (!isset($this->providers[$name])) {
-            $this->providers[$name] = $this->createProvider($name);
-        }
-
-        return $this->providers[$name];
-    }
-
-    public function getDefaultProvider()
-    {
-        return $this->app['config']['xepay.default.provider'];
     }
 
     /**

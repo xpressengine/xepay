@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PaymentLog extends Model
 {
-    protected $table = 'payment_log';
+    protected $table = 'xepay_payment_log';
 
     protected $fillable = ['pg', 'oid', 'tid', 'type', 'method', 'currency', 'amount', 'success', 'response'];
 
