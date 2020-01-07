@@ -115,7 +115,7 @@ class Gateway
     }
 
 
-    public function cancel(Order $order, $message, $amount = 0, $transactionId = null)
+    public function cancel(Order $order, $message, $money = null, $transactionId = null)
     {
         $log = PaymentLog::paid()->succeeded()
             ->byPg($this->getName())
@@ -127,7 +127,9 @@ class Gateway
             throw new \Exception('Not exists the log for cancel');
         }
 
-        $response = $this->pg->cancel($order, $message, $log->response, $amount, $transactionId);
+        $money = $money && !$money instanceof Money ? Money::KRW($money) : $money;
+
+        $response = $this->pg->cancel($order, $message, $log->response, $money, $transactionId);
 
         $this->createLog(PaymentLog::TYPE_CANCEL, $response, $log);
 
