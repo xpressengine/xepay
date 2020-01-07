@@ -47,10 +47,10 @@
         callback();
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        events.fire('prepare.error', qXHR, textStatus, errorThrown);
+        events.fire('prepare.error', jqXHR, textStatus, errorThrown);
       },
-      complete: function(qXHR, textStatus) {
-        events.fire('prepare.complete', qXHR, textStatus);
+      complete: function(jqXHR, textStatus) {
+        events.fire('prepare.complete', jqXHR, textStatus);
       }
     });
   };
