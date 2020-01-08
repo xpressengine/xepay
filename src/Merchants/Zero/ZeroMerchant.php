@@ -79,7 +79,7 @@ class ZeroMerchant extends Merchant
      */
     public function cancel(Order $order, $message, array $data, Money $money = null, $transactionId = null)
     {
-        throw new \Exception('No need cancel');
+        return new \Xehub\Xepay\Merchants\Zero\Response($order);
     }
 
     public function setOrder(Order $order)

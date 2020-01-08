@@ -87,7 +87,7 @@ class TestMerchant extends Merchant
      */
     public function cancel(Order $order, $message, array $data, Money $money = null, $transactionId = null)
     {
-        throw new \Exception('No need cancel');
+        return new \Xehub\Xepay\Merchants\Test\Response($order, $money ? $money->getAmount() : $order->getAmount());
     }
 
     public function setOrder(Order $order)
