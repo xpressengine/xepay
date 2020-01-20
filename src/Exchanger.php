@@ -52,7 +52,7 @@ class Exchanger
         }
 
         $content = $response->getBody()->getContents();
-        $content = json_decode($content);
+        $content = json_decode($content, true);
 
         $this->rates = $content['rates'];
     }
