@@ -10,27 +10,32 @@ class PaymentController extends Controller
 {
     public function before(Request $request, PaymentManager $payment, $id)
     {
-        if (!$order = $payment->getOrder($id)) {
+        $gateway = $payment->gateway($request->get('_pg'));
+        if (!$order = $gateway->getOrder($id)) {
             abort(404);
         }
 
-        return $payment->render($order, $request->except('_token'));
+        return $gateway->render($order, $request->except('_token'));
     }
 
-    public function callback(Request $request, PaymentManager $payment)
+    public function callback(Request $request, PaymentManager $payment, $pg)
     {
-        return $payment->callback($request);
+        $gateway = $payment->gateway($pg);
+
+        return $gateway->callback($request);
     }
 
-    public function update(Request $request, PaymentManager $payment, Redirector $redirector, $id)
+    public function update(Request $request, PaymentManager $payment, Redirector $redirector, $pg, $id)
     {
-        if (!$order = $payment->getOrder($id)) {
+        $gateway = $payment->gateway($pg);
+
+        if (!$order = $gateway->getOrder($id)) {
             abort(404);
         }
 
         DB::beginTransaction();
         try {
-            $payment->approve($request, $order);
+            $gateway->approve($request, $order);
             DB::commit();
         } catch (PaymentFailedException $e) {
             DB::rollBack();
@@ -47,5 +52,10 @@ class PaymentController extends Controller
         }
 
         return $redirector->redirectToComplete($order);
+    }
+
+    public function misc(Request $request, $pg)
+    {
+
     }
 }

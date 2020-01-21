@@ -13,11 +13,16 @@ class BladeGenerator
         $this->urls = $urls;
     }
 
-    public function generate(Order $order, Gateway $gateway)
+//    public function generate(Order $order, Gateway $gateway)
+    public function generate(Order $order, array $gateways)
     {
         $route = $this->urls->route('payment.before', ['id' => $order->getOrderId()]);
         $defaultJs = $this->getContent(__DIR__.'/../resources/js/payment.js');
-        $gatewayJs = $this->getGatewayJs($gateway);
+//        $gatewayJs = $this->getGatewayJs($gateway);
+        $gatewayJs = '';
+        foreach ($gateways as $gateway) {
+            $gatewayJs .= $this->getGatewayJs($gateway).PHP_EOL;
+        }
 
             return <<<EOP
 <div id="__payment-pg-form" data-url="{$route}"></div>
@@ -45,12 +50,11 @@ EOP;
             return "<script src=".$this->urls->asset($script['file'])." {$attrs}></script>";
         })->implode(PHP_EOL);
 
-        $methods = json_encode($gateway->getMethods());
+//        $methods = json_encode($gateway->getMethods());
 
         return <<<EOP
 $external
 <script>
-    payment.methods = {$methods};
     $internal
 </script>
 EOP;

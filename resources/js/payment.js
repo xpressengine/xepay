@@ -1,8 +1,7 @@
 (function (exports, $) {
   'use strict';
 
-  var gateway = null;
-  var easiers = {};
+  var gateway = {};
 
   var validator = function (obj) {
     var valid = true,
@@ -33,7 +32,12 @@
     }
   };
 
-  var prepare = function (params, callback) {
+  var prepare = function (name, params, callback) {
+    if (typeof params === 'object' && params !== null) {
+      params['_pg'] = name;
+    } else {
+      params += (params !== '' ? '&':'') + '_pg='+name;
+    }
     $.ajax({
       type: 'post',
       dataType: 'html',
@@ -58,37 +62,26 @@
   exports.payment = (function () {
     return {
       defineGateway: function (obj) {
-        if (gateway) {
-          console.error('Already defined payment gateway');
-          return false;
-        }
+        // if (gateway) {
+        //   console.error('Already defined payment gateway');
+        //   return false;
+        // }
 
         if (!validator(obj)) {
           console.error('Must be declared implement the remaining methods');
           return false;
         }
 
-        gateway = obj;
-      },
-      defineEasier: function (obj) {
-        if (!validator(obj)) {
-          console.error('Must be declared implement the remaining methods');
-          return false;
-        }
-
-        var name = obj.name || '';
-        if (name.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '') === '') {
-          console.error('A name entry must be defined.');
-          return false;
-        }
-
-        easiers[obj.name] = obj;
+        gateway[obj.name] = obj;
       },
       listen: function (name, callback) {
         events.add(name, callback);
       },
       exec: function (method, params) {
-        prepare(params, function () {
+        var arr = method.split(':');
+        var gatewayName = arr[0];
+        method = arr[1];
+        prepare(gatewayName, params, function () {
 
           events.fire('executing');
 
@@ -97,17 +90,14 @@
             return;
           }
 
-          if (easiers[method]) {
-            // easy payment
-            easiers[method].exec();
-          } else {
-            if (!gateway) {
-              console.error('payment gateway is not defined');
-              return false;
-            }
 
-            gateway.exec(method);
+          var selected = gateway[gatewayName] || null;
+          if (!selected) {
+            console.error('payment gateway is not defined');
+            return false;
           }
+
+          selected.exec(method);
 
 
         }.bind(this));

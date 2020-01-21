@@ -8,9 +8,17 @@ class Response implements ResponseInterface
 {
     protected $order;
 
-    public function __construct(Order $order)
+    protected $proof;
+
+    /**
+     * Response constructor.
+     * @param Order $order
+     * @param bool  $proof
+     */
+    public function __construct(Order $order, $proof)
     {
         $this->order = $order;
+        $this->proof = $proof;
     }
 
     /**
@@ -18,7 +26,7 @@ class Response implements ResponseInterface
      */
     public function success()
     {
-        return true;
+        return !!$this->proof;
     }
 
     /**
@@ -26,7 +34,7 @@ class Response implements ResponseInterface
      */
     public function fails()
     {
-        return false;
+        return !$this->success();
     }
 
     /**

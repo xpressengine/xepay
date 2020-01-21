@@ -56,7 +56,7 @@ class TestMerchant extends Merchant
      */
     public function callback(Request $request)
     {
-        //
+        throw new \Exception('Unhandled.', 400);
     }
 
     /**

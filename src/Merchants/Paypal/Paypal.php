@@ -25,6 +25,10 @@ class Paypal extends Merchant
 {
     protected $context;
 
+    protected $methods = [
+        'paypal' => 'Paypal',
+    ];
+
     public function __construct(ApiContext $context)
     {
         $this->context = $context;
@@ -72,8 +76,8 @@ class Paypal extends Merchant
             ->setInvoiceNumber($order->getOrderId());
 
         $redirectUrls = new RedirectUrls();
-        $redirectUrls->setReturnUrl(route('payment.callback', ['orderId' => $order->getOrderId()]))
-            ->setCancelUrl(route('payment.paypal.cancel', ['orderId' => $order->getOrderId()]));
+        $redirectUrls->setReturnUrl(route('payment.callback', ['pg' => 'paypal', 'orderId' => $order->getOrderId()]))
+            ->setCancelUrl(route('payment.misc', ['pg' => 'paypal', 'orderId' => $order->getOrderId()]));
 
         $payment = new PaypalPayment();
         $payment->setIntent('sale')

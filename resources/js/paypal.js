@@ -1,4 +1,5 @@
 window.payment.defineGateway({
+  name: 'paypal',
   exec: function () {
     var url = $('form#fpaypalpayment').attr('action');
 

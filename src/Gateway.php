@@ -44,9 +44,15 @@ class Gateway
         $this->provider = $provider;
     }
 
-    public function approve(Request $request)
+    public function approve(Request $request, Order $order)
     {
+        if (method_exists($this->pg, 'setOrder')) {
+            $this->pg->setOrder($order);
+        }
+
         $this->createLog(PaymentLog::TYPE_PAY, $this->response = $this->pg->approve($request));
+
+        $this->updateOrder($order, $this->response);
 
         return $this->response;
     }

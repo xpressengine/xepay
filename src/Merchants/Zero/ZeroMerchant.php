@@ -1,6 +1,7 @@
 <?php
 namespace Xehub\Xepay\Merchants\Zero;
 
+use Illuminate\Support\Str;
 use Xehub\Xepay\Money;
 use Xehub\Xepay\Order;
 use Xehub\Xepay\Merchant;
@@ -28,7 +29,16 @@ class ZeroMerchant extends Merchant
      */
     public function render(Order $order, $data = [], Money $money = null)
     {
-        return $this->getView('xepay::zero.form', compact('order', 'data'));
+        $tokenName = $this->getTokenName($order);
+        $token = Str::random(32);
+        session()->flash($tokenName, $token);
+
+        return $this->getView('xepay::zero.form', compact('order', 'data', 'token'));
+    }
+
+    protected function getTokenName(Order $order)
+    {
+        return '_payment_token'.hash_hmac('sha1', $order->getOrderId(), config('app.key'));
     }
 
     /**
@@ -48,7 +58,7 @@ class ZeroMerchant extends Merchant
      */
     public function callback(Request $request)
     {
-        //
+        throw new \Exception('Unhandled.', 400);
     }
 
     /**
@@ -57,7 +67,9 @@ class ZeroMerchant extends Merchant
      */
     public function approve(Request $request)
     {
-        return new \Xehub\Xepay\Merchants\Zero\Response($this->order);
+        $tokenName = $this->getTokenName($this->order);
+        $proof = $request->get('_payment_token', 0) === $request->session()->get($tokenName, 1);
+        return new \Xehub\Xepay\Merchants\Zero\Response($this->order, $proof);
     }
 
     /**
@@ -79,7 +91,7 @@ class ZeroMerchant extends Merchant
      */
     public function cancel(Order $order, $message, array $data, Money $money = null, $transactionId = null)
     {
-        return new \Xehub\Xepay\Merchants\Zero\Response($order);
+        return new \Xehub\Xepay\Merchants\Zero\Response($order, true);
     }
 
     public function setOrder(Order $order)

@@ -1,7 +1,7 @@
 
-<form id="__form-zero-pay" method="post" action="{{ route('payment.update', ['id' => $order->getOrderId()]) }}">
+<form id="__form-zero-pay" method="post" action="{{ route('payment.update', ['pg' => 'zero', 'id' => $order->getOrderId()]) }}">
     {{ csrf_field() }}
-    <input type="hidden" name="_payment_token" value="{{ Session::flash('_payment_token', Str::random(32)) }}">
+    <input type="hidden" name="_payment_token" value="{{ $token }}">
     @foreach($data as $key => $value)
         @if(is_array($value))
             @foreach($value as $k => $v)
