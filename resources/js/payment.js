@@ -59,7 +59,7 @@
     });
   };
 
-  exports.payment = (function () {
+  exports.xepay = (function () {
     return {
       defineGateway: function (obj) {
         if (!validator(obj)) {

@@ -1,4 +1,4 @@
-window.payment.defineGateway({
+window.xepay.defineGateway({
   name: 'paypal',
   exec: function () {
     var $f = $('form#fpaypalpayment');

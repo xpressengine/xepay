@@ -16,7 +16,7 @@ class BladeGenerator
 //    public function generate(Order $order, Gateway $gateway)
     public function generate(Order $order, array $gateways)
     {
-        $route = $this->urls->route('payment.before', ['id' => $order->getOrderId()]);
+        $route = $this->urls->route('xepay::before', ['id' => $order->getOrderId()]);
         $defaultJs = $this->getContent(__DIR__.'/../resources/js/payment.js');
 //        $gatewayJs = $this->getGatewayJs($gateway);
         $gatewayJs = '';

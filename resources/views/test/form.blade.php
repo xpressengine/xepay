@@ -1,4 +1,4 @@
-<form id="__form-test-pay" method="post" action="{{ route('payment.update', ['pg' => 'test', 'id' => $order->getOrderId()]) }}">
+<form id="__form-test-pay" method="post" action="{{ route('xepay::update', ['pg' => 'test', 'id' => $order->getOrderId()]) }}">
     {{ csrf_field() }}
     <input type="hidden" name="_payment_method" value="card">
     <input type="hidden" name="_payment_amount" value="{{ $amount }}">

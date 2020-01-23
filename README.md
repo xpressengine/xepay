@@ -63,7 +63,7 @@ return [
 ```javascript
 <script>
 $('.btn-submit').click(function () {
-  payment.exec(method);
+  xepay.exec(method);
 });
 </script>
 ```
@@ -71,14 +71,14 @@ $('.btn-submit').click(function () {
 
 결제완료시 사용해야할 기타 정보들이 있다면 두번째 인자로 값들을 전달하세요.
 ```javascript
-payment.exec(method, params);
+xepay.exec(method, params);
 ```
 
 결제기능의 js 내에는 몇가지 이벤트가 심어저 있습니다. 결제요청중 필요한 처리가 있는 경우 이 이벤트를 통해 작업을 수행할 수 있습니다.
 예를들어 중복 요청 방지를 위해 `exec()` 를 실행하기전 결제버튼을 disabled 한 경우 결제 폼 요청이 완료된 후 `prepare.complete` 이벤트를 통해
 disabled 를 해제할 수 있습니다.
 ```javascript
-payment.listen('prepare.complete', function () {
+xepay.listen('prepare.complete', function () {
   $('.btn-submit').prop('disabled', false);
 });
 ```

@@ -4,10 +4,10 @@ return [
     'test_mode' => env('XEPAY_TEST', false),
 
     'default' => [
-        'provider' => env('PAYMENT_PROVIDER'),
+        'provider' => env('XEPAY_PROVIDER'),
     ],
 
-    'enables' => env('PAYMENT_ENABLES', 'paypal'),
+    'enables' => env('XEPAY_ENABLES', 'paypal'),
 
     'drivers' => [
         'paypal' => [

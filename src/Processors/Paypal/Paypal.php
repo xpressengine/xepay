@@ -76,8 +76,8 @@ class Paypal extends Processor
             ->setInvoiceNumber($order->getOrderId());
 
         $redirectUrls = new RedirectUrls();
-        $redirectUrls->setReturnUrl(route('payment.callback', ['pg' => 'paypal', 'orderId' => $order->getOrderId()]))
-            ->setCancelUrl(route('payment.misc', ['pg' => 'paypal', 'orderId' => $order->getOrderId()]));
+        $redirectUrls->setReturnUrl(route('xepay::callback', ['pg' => 'paypal', 'orderId' => $order->getOrderId()]))
+            ->setCancelUrl(route('xepay::misc', ['pg' => 'paypal', 'orderId' => $order->getOrderId()]));
 
         $payment = new PaypalPayment();
         $payment->setIntent('sale')
