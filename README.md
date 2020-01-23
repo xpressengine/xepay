@@ -30,12 +30,19 @@ class AppServiceProvider extends ServiceProvider
 
 return [
     'default' => [
-        'merchant' => env('PAYMENT_DEFAULT', 'paypal'),
         'provider' => 'custom',
     ],
     
     ...
 ];
+```
+
+사용할 pg 는 config 에 `enables` 항목에 작성합니다. 2개 이상의 pg를 사용하는 경우
+각 pg 는 쉼표(,)로 구분합니다.
+```php
+
+'enables' => env('PAYMENT_ENABLES', 'paypal'),
+
 ```
 
 ~~또한, 동작에 필요한 스크립트 파일을 public 디렉토리에 퍼블리싱합니다.~~
@@ -50,8 +57,7 @@ return [
 결제페이지 하단에 `@paying($order)`와 같이 blade 지시자를 삽입합니다.
 전달하는 `$order` 는 주문객체(Order) 입니다.
 
-결제 기능에서 사용하는 결제수단은 1개 이상일 수 있습니다. 결제수단은 `app('xepay')->getMethods()` 를 이용하여 처리하거나,
-script `payment.methods` 값을 통해 동적으로 폼에 삽입할 수 있습니다.
+결제 기능에서 사용하는 결제수단은 1개 이상일 수 있습니다. 결제수단은 `app('xepay')->getMethods()` 를 이용하여 화면에 표시 및 처리할 수 있습니다.
 
 이제 사용자가 결제페이지에서 결제 버튼을 클릭(혹은 폼 submit) 시 해당 이벤트 리스너에서 결제동작을 호출해야 합니다.
 ```javascript

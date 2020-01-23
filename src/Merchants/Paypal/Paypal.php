@@ -183,6 +183,11 @@ class Paypal extends Merchant
         );
     }
 
+    public function misc(Request $request)
+    {
+        return '<script>window.close();</script>';
+    }
+
     protected function getUsdAmount(Money $money, $precision = 2)
     {
         return round($this->exchangeMoney($money, 'USD')->getAmount(), $precision);

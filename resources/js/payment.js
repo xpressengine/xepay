@@ -5,7 +5,7 @@
 
   var validator = function (obj) {
     var valid = true,
-      interfaces = ['exec'];
+      interfaces = ['name', 'exec'];
     for (var i in interfaces) {
       if (!obj.hasOwnProperty(interfaces[i])) {
         valid = false;
@@ -62,11 +62,6 @@
   exports.payment = (function () {
     return {
       defineGateway: function (obj) {
-        // if (gateway) {
-        //   console.error('Already defined payment gateway');
-        //   return false;
-        // }
-
         if (!validator(obj)) {
           console.error('Must be declared implement the remaining methods');
           return false;

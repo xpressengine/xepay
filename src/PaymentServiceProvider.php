@@ -21,7 +21,7 @@ class PaymentServiceProvider extends ServiceProvider
         });
 
         Money::setExchanger(function ($money, $currency) {
-            $this->app[Exchanger::class]->exchangeTo($money, $currency);
+            return $this->app[Exchanger::class]->exchangeTo($money, $currency);
         });
     }
 

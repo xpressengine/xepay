@@ -54,8 +54,11 @@ class PaymentController extends Controller
         return $redirector->redirectToComplete($order);
     }
 
-    public function misc(Request $request, $pg)
+    public function misc(Request $request, PaymentManager $payment, $pg)
     {
+        $gateway = $payment->gateway($pg);
+
+        return $gateway->misc($request);
 
     }
 }

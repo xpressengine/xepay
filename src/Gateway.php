@@ -2,6 +2,7 @@
 namespace Xehub\Xepay;
 
 use Illuminate\Foundation\Http\Events\RequestHandled;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Xehub\Xepay\Events\Paid;
 use Xehub\Xepay\Events\PaymentRolledBack;
 use Xehub\Xepay\Events\Rendering;
@@ -169,6 +170,15 @@ class Gateway
         }
 
         return $order;
+    }
+
+    public function misc(Request $request)
+    {
+        if (!method_exists($this->pg, 'misc')) {
+            throw new NotFoundHttpException();
+        }
+
+        return $this->pg->misc($request);
     }
 
     public function getName()
