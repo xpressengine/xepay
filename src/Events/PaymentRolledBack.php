@@ -7,7 +7,7 @@ use Xehub\Xepay\Response;
 class PaymentRolledBack
 {
     /**
-     * The response from the merchant
+     * The response from the pg
      *
      * @var Response
      */

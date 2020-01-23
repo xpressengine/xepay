@@ -1,18 +1,19 @@
 <?php
-namespace Xehub\Xepay\Merchants\Paypal;
+namespace Xehub\Xepay\Processors\Test;
 
+use Xehub\Xepay\Order;
 use Xehub\Xepay\Response as ResponseInterface;
 
 class Response implements ResponseInterface
 {
-    protected $payment;
+    protected $order;
 
-    protected $transaction;
+    protected $amount;
 
-    public function __construct(\PayPal\Api\Payment $payment)
+    public function __construct(Order $order, $amount)
     {
-        $this->payment = $payment;
-        $this->transaction = $payment->getTransactions()[0];
+        $this->order = $order;
+        $this->amount = $amount;
     }
 
     /**
@@ -20,7 +21,7 @@ class Response implements ResponseInterface
      */
     public function success()
     {
-        return $this->payment->getState() === 'approved';
+        return true;
     }
 
     /**
@@ -28,8 +29,7 @@ class Response implements ResponseInterface
      */
     public function fails()
     {
-//        return $this->payment->getState() === 'failed';
-        return !$this->success();
+        return false;
     }
 
     /**
@@ -37,7 +37,7 @@ class Response implements ResponseInterface
      */
     public function orderId()
     {
-        return $this->transaction->getInvoiceNumber();
+        return $this->order->getOrderId();
     }
 
     /**
@@ -45,7 +45,7 @@ class Response implements ResponseInterface
      */
     public function transactionId()
     {
-        return $this->transaction->getRelatedResources()[0]->sale->getId();
+        return $this->orderId();
     }
 
     /**
@@ -53,12 +53,12 @@ class Response implements ResponseInterface
      */
     public function payMethod()
     {
-        return 'paypal';
+        return 'card';
     }
 
     public function currency()
     {
-        return 'USD';
+        return 'KRW';
     }
 
     /**
@@ -66,7 +66,7 @@ class Response implements ResponseInterface
      */
     public function amount()
     {
-        return $this->transaction->getAmount()->getTotal();
+        return (int)$this->amount;
     }
 
     /**
@@ -74,6 +74,6 @@ class Response implements ResponseInterface
      */
     public function getAll()
     {
-        return $this->payment->toArray();
+        return [];
     }
 }

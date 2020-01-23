@@ -1,29 +1,24 @@
 <?php
-namespace Xehub\Xepay\Merchants\Test;
+namespace Xehub\Xepay\Processors\Zero;
 
+use Illuminate\Support\Str;
 use Xehub\Xepay\Money;
 use Xehub\Xepay\Order;
-use Xehub\Xepay\Merchant;
+use Xehub\Xepay\Processor;
 use Xehub\Xepay\Response;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
-class TestMerchant extends Merchant
+class ZeroProcessor extends Processor
 {
     protected $order;
-
-    protected $methods = [
-        'card' => '카드',
-    ];
 
     /**
      * @return mixed
      */
     public function scripts()
     {
-        return [
-            ['file' => __DIR__.'/../../../resources/js/test.js'],
-        ];
+        return [];
     }
 
     /**
@@ -34,9 +29,16 @@ class TestMerchant extends Merchant
      */
     public function render(Order $order, $data = [], Money $money = null)
     {
-        $money = $money ?: Money::KRW($order->getAmount());
-        $amount = $this->exchangeMoney($money, 'KRW')->getAmount();
-        return $this->getView('xepay::test.form', compact('order', 'data', 'amount'));
+        $tokenName = $this->getTokenName($order);
+        $token = Str::random(32);
+        session()->flash($tokenName, $token);
+
+        return $this->getView('xepay::zero.form', compact('order', 'data', 'token'));
+    }
+
+    protected function getTokenName(Order $order)
+    {
+        return '_payment_token'.hash_hmac('sha1', $order->getOrderId(), config('app.key'));
     }
 
     /**
@@ -65,7 +67,9 @@ class TestMerchant extends Merchant
      */
     public function approve(Request $request)
     {
-        return new \Xehub\Xepay\Merchants\Test\Response($this->order, $request->get('_payment_amount'));
+        $tokenName = $this->getTokenName($this->order);
+        $proof = $request->get('_payment_token', 0) === $request->session()->get($tokenName, 1);
+        return new \Xehub\Xepay\Processors\Zero\Response($this->order, $proof);
     }
 
     /**
@@ -87,7 +91,7 @@ class TestMerchant extends Merchant
      */
     public function cancel(Order $order, $message, array $data, Money $money = null, $transactionId = null)
     {
-        return new \Xehub\Xepay\Merchants\Test\Response($order, $money ? $money->getAmount() : $order->getAmount());
+        return new \Xehub\Xepay\Processors\Zero\Response($order, true);
     }
 
     public function setOrder(Order $order)

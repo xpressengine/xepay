@@ -1,21 +1,18 @@
 <?php
-namespace Xehub\Xepay\Merchants\Paypal;
+namespace Xehub\Xepay\Processors\Paypal;
 
-use PayPal\Api\DetailedRefund;
+use Xehub\Xepay\Response as ResponseInterface;
 
-class CancelResponse implements \Xehub\Xepay\Response
+class Response implements ResponseInterface
 {
-    protected $refund;
+    protected $payment;
 
-    protected $orderId;
+    protected $transaction;
 
-    protected $transactionId;
-
-    public function __construct(DetailedRefund $refund, $orderId, $transactionId)
+    public function __construct(\PayPal\Api\Payment $payment)
     {
-        $this->refund = $refund;
-        $this->orderId = $orderId;
-        $this->transactionId = $transactionId;
+        $this->payment = $payment;
+        $this->transaction = $payment->getTransactions()[0];
     }
 
     /**
@@ -23,7 +20,7 @@ class CancelResponse implements \Xehub\Xepay\Response
      */
     public function success()
     {
-        return $this->refund->getState() === 'completed';
+        return $this->payment->getState() === 'approved';
     }
 
     /**
@@ -31,7 +28,7 @@ class CancelResponse implements \Xehub\Xepay\Response
      */
     public function fails()
     {
-//        return $this->refund->getState() === 'failed';
+//        return $this->payment->getState() === 'failed';
         return !$this->success();
     }
 
@@ -40,7 +37,7 @@ class CancelResponse implements \Xehub\Xepay\Response
      */
     public function orderId()
     {
-        return $this->orderId;
+        return $this->transaction->getInvoiceNumber();
     }
 
     /**
@@ -48,7 +45,7 @@ class CancelResponse implements \Xehub\Xepay\Response
      */
     public function transactionId()
     {
-        return $this->transactionId;
+        return $this->transaction->getRelatedResources()[0]->sale->getId();
     }
 
     /**
@@ -69,7 +66,7 @@ class CancelResponse implements \Xehub\Xepay\Response
      */
     public function amount()
     {
-        return $this->refund->getAmount()->getTotal();
+        return $this->transaction->getAmount()->getTotal();
     }
 
     /**
@@ -77,6 +74,6 @@ class CancelResponse implements \Xehub\Xepay\Response
      */
     public function getAll()
     {
-        return $this->refund->toArray();
+        return $this->payment->toArray();
     }
 }

@@ -1,10 +1,10 @@
 <?php
-namespace Xehub\Xepay\Merchants\Paypal;
+namespace Xehub\Xepay\Processors\Paypal;
 
 
 use Xehub\Xepay\Money;
 use Xehub\Xepay\Order;
-use Xehub\Xepay\Merchant;
+use Xehub\Xepay\Processor;
 use Xehub\Xepay\Response;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,7 +21,7 @@ use PayPal\Api\Sale;
 use PayPal\Api\Transaction;
 use PayPal\Rest\ApiContext;
 
-class Paypal extends Merchant
+class Paypal extends Processor
 {
     protected $context;
 
@@ -129,7 +129,7 @@ class Paypal extends Merchant
 
         $payment = $payment->execute($execution, $this->context);
 
-        return new \Xehub\Xepay\Merchants\Paypal\Response($payment);
+        return new \Xehub\Xepay\Processors\Paypal\Response($payment);
     }
 
     /**
@@ -143,7 +143,7 @@ class Paypal extends Merchant
         $sale = new Sale();
         $refunded = $sale->setId($response->transactionId())->refundSale($request, $this->context);
 
-        return new \Xehub\Xepay\Merchants\Paypal\CancelResponse(
+        return new \Xehub\Xepay\Processors\Paypal\CancelResponse(
             $refunded,
             $response->orderId(),
             $response->transactionId()
@@ -176,7 +176,7 @@ class Paypal extends Merchant
         $sale = new Sale();
         $refunded = $sale->setId($transactionId)->refundSale($request, $this->context);
 
-        return new \Xehub\Xepay\Merchants\Paypal\CancelResponse(
+        return new \Xehub\Xepay\Processors\Paypal\CancelResponse(
             $refunded,
             $order->getOrderId(),
             $transactionId

@@ -51,7 +51,7 @@ class PaymentManager
 
         $method = 'create' . Str::studly($name) . 'Gateway';
         if (method_exists($this, $method)) {
-            return $this->$method($name, $this->getMerchantInfo($name));
+            return $this->$method($name, $this->getConfig($name));
         }
 
         throw new InvalidArgumentException("PG [$name] not supported.");
@@ -72,37 +72,27 @@ class PaymentManager
             'cache.FileName' => $config['cache_path'],
         ]);
 
-        return $this->adapt(new Merchants\Paypal\Paypal($context), $name);
+        return $this->adapt(new Processors\Paypal\Paypal($context), $name);
     }
 
     protected function createTestGateway($name, $config)
     {
-        return $this->adapt(new Merchants\Test\TestMerchant(), $name);
+        return $this->adapt(new Processors\Test\TestProcessor(), $name);
     }
 
     protected function createZeroGateway($name, $config)
     {
-        return $this->adapt(new Merchants\Zero\ZeroMerchant(), $name);
+        return $this->adapt(new Processors\Zero\ZeroProcessor(), $name);
     }
 
-    protected function adapt(Merchant $gateway, $name)
+    protected function adapt(Processor $gateway, $name)
     {
         return new Gateway($name, $gateway, $this->getProvider());
     }
 
-//    /**
-//     * Get the default driver name.
-//     *
-//     * @return string
-//     */
-//    public function getDefaultGateway()
-//    {
-//        return $this->app['config']['xepay.default.merchant'];
-//    }
-
-    protected function getMerchantInfo($name)
+    protected function getConfig($name)
     {
-        return $this->app['config']["xepay.merchants.{$name}"] ?: [];
+        return $this->app['config']["xepay.drivers.{$name}"] ?: [];
     }
 
     protected function isTest()
@@ -116,48 +106,6 @@ class PaymentManager
 
         return $this;
     }
-
-//    public function callback(Request $request, $name)
-//    {
-//        if ($this->checkZeroPayment($request)) {
-//            $gateway = $this->getGatewayForZero();
-//        } else {
-//            $gateway = $this->gateway($name);
-//        }
-//
-//        return $gateway->callback($request);
-//    }
-
-//    public function approve(Request $request, Order $order)
-//    {
-//        $gateway = $this->findGateway($request);
-//        if (in_array($gateway->getName(), ['zero', 'test'])) {
-//            $gateway->setOrder($order);
-//        }
-//
-//        $gateway->updateOrder($order, $response = $gateway->approve($request));
-//
-//        return $response;
-//    }
-
-//    public function findGateway(Request $request)
-//    {
-//        if ($this->checkZeroPayment($request)) {
-//            return $this->getGatewayForZero();
-//        }
-//
-//        return $this->gateway();
-//    }
-
-//    protected function checkZeroPayment(Request $request)
-//    {
-//        return $request->get('_payment_token', 0) === $request->session()->get('_payment_token', 1);
-//    }
-
-//    protected function getGatewayForZero()
-//    {
-//        return $this->adapt(new ZeroMerchant(), 'zero');
-//    }
 
     public function getMethods()
     {
@@ -176,8 +124,12 @@ class PaymentManager
 
     protected function getEnables()
     {
+        if ($this->isTest()) {
+            return [$this->gateway('test')];
+        }
+
         $enables = array_intersect_key(
-            $this->app['config']['xepay.merchants'],
+            $this->app['config']['xepay.drivers'],
             array_flip(explode(',', $this->app['config']['xepay.enables']))
         );
 
@@ -189,19 +141,12 @@ class PaymentManager
         return $gateways;
     }
 
-//    public function __call($method, $parameters)
-//    {
-//        return call_user_func_array([$this->gateway(), $method], $parameters);
-//    }
-
     /**
      * @param Order $order
-     * @param string $gateway gateway name
      * @return mixed
      */
-    public function generate(Order $order, $gateway = null)
+    public function generate(Order $order)
     {
-//        return $this->app->make(BladeGenerator::class)->generate($order, $this->gateway($gateway));
         return $this->app->make(BladeGenerator::class)->generate($order, $this->getEnables());
     }
 }

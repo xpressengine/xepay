@@ -1,5 +1,5 @@
 <?php
-namespace Xehub\Xepay\Merchants\Test;
+namespace Xehub\Xepay\Processors\Zero;
 
 use Xehub\Xepay\Order;
 use Xehub\Xepay\Response as ResponseInterface;
@@ -8,12 +8,17 @@ class Response implements ResponseInterface
 {
     protected $order;
 
-    protected $amount;
+    protected $proof;
 
-    public function __construct(Order $order, $amount)
+    /**
+     * Response constructor.
+     * @param Order $order
+     * @param bool  $proof
+     */
+    public function __construct(Order $order, $proof)
     {
         $this->order = $order;
-        $this->amount = $amount;
+        $this->proof = $proof;
     }
 
     /**
@@ -21,7 +26,7 @@ class Response implements ResponseInterface
      */
     public function success()
     {
-        return true;
+        return !!$this->proof;
     }
 
     /**
@@ -29,7 +34,7 @@ class Response implements ResponseInterface
      */
     public function fails()
     {
-        return false;
+        return !$this->success();
     }
 
     /**
@@ -53,7 +58,7 @@ class Response implements ResponseInterface
      */
     public function payMethod()
     {
-        return 'card';
+        return null;
     }
 
     public function currency()
@@ -66,7 +71,7 @@ class Response implements ResponseInterface
      */
     public function amount()
     {
-        return (int)$this->amount;
+        return 0;
     }
 
     /**

@@ -3,7 +3,7 @@ namespace Xehub\Xepay;
 
 use Illuminate\Contracts\View\Factory as ViewFactoryContract;
 
-abstract class Merchant implements PayProcess
+abstract class Processor implements PayProcess
 {
     protected static $view;
 

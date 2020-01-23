@@ -31,7 +31,7 @@ class PaymentServiceProvider extends ServiceProvider
 
         $this->app->singleton('xepay', function ($app) {
             Gateway::setEventDispatcher($app['events']);
-            Merchant::setViewResolver($app[ViewFactory::class]);
+            Processor::setViewResolver($app[ViewFactory::class]);
 
             return new PaymentManager($app);
         });

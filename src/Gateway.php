@@ -9,7 +9,7 @@ use Xehub\Xepay\Events\Rendering;
 use Xehub\Xepay\Exceptions\PaymentFailedException;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
-use Xehub\Xepay\Merchants\Zero\ZeroMerchant;
+use Xehub\Xepay\Processors\Zero\ZeroProcessor;
 
 class Gateway
 {
@@ -19,7 +19,7 @@ class Gateway
     protected $name;
 
     /**
-     * @var Merchant
+     * @var Processor
      */
     protected $pg;
 
@@ -38,7 +38,7 @@ class Gateway
      */
     protected $response;
 
-    public function __construct($name, Merchant $pg, OrderProvider $provider)
+    public function __construct($name, Processor $pg, OrderProvider $provider)
     {
         $this->pg = $pg;
         $this->name = $name;
@@ -67,7 +67,7 @@ class Gateway
         $money = $event->money;
 
         if ($money && $money->getAmount() === 0) {
-            return (new static('zero', new ZeroMerchant(), $this->provider))
+            return (new static('zero', new ZeroProcessor(), $this->provider))
                 ->render($order, $data, $money);
         }
 
