@@ -49,7 +49,7 @@ class PaymentManager
             return $this->adapt($this->customCreators[$name]($this->app), $name);
         }
 
-        $method = 'create' . Str::studly($name) . 'Gateway';
+        $method = 'create' . Str::studly($name) . 'Driver';
         if (method_exists($this, $method)) {
             return $this->$method($name, $this->getConfig($name));
         }
@@ -57,7 +57,7 @@ class PaymentManager
         throw new InvalidArgumentException("PG [$name] not supported.");
     }
 
-    protected function createPaypalGateway($name, $config)
+    protected function createPaypalDriver($name, $config)
     {
         $context = new ApiContext(
             new OAuthTokenCredential($config['id'], $config['secret'])
@@ -75,12 +75,12 @@ class PaymentManager
         return $this->adapt(new Processors\Paypal\Paypal($context), $name);
     }
 
-    protected function createTestGateway($name, $config)
+    protected function createTestDriver($name, $config)
     {
         return $this->adapt(new Processors\Test\TestProcessor(), $name);
     }
 
-    protected function createZeroGateway($name, $config)
+    protected function createZeroDriver($name, $config)
     {
         return $this->adapt(new Processors\Zero\ZeroProcessor(), $name);
     }
