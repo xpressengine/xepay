@@ -52,7 +52,9 @@ class Paypal extends Processor
      */
     public function render(Order $order, $data = [], Money $money = null)
     {
-        $money = $money ?: Money::KRW($order->getAmount());
+//        $money = $money ?: Money::KRW($order->getAmount());
+        $money = $money ?: new Money($order->getAmount(), $order->getCurrency());
+
         $usdAmount = $this->getUsdAmount($money);
 
         $payer = new Payer();

@@ -34,7 +34,8 @@ class TestProcessor extends Processor
      */
     public function render(Order $order, $data = [], Money $money = null)
     {
-        $money = $money ?: Money::KRW($order->getAmount());
+//        $money = $money ?: Money::KRW($order->getAmount());
+        $money = $money ?: new Money($order->getAmount(), $order->getCurrency());
         $amount = $this->exchangeMoney($money, 'KRW')->getAmount();
         return $this->getView('xepay::test.form', compact('order', 'data', 'amount'));
     }
