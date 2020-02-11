@@ -20,6 +20,11 @@ interface Order
     public function getAmount();
 
     /**
+     * @return string
+     */
+    public function getCurrency();
+
+    /**
      * @return int
      */
     public function getItemCount();
@@ -28,4 +33,10 @@ interface Order
      * @return string|null
      */
     public function getTransactionId();
+
+    public function getPayerName();
+
+    public function getPayerEmail();
+
+    public function getPayerPhone();
 }
