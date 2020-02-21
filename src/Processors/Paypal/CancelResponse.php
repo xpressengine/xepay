@@ -73,6 +73,14 @@ class CancelResponse implements \Xehub\Xepay\Response
     }
 
     /**
+     * @return null|string
+     */
+    public function message()
+    {
+        return $this->fails() ? 'Refunding fail..' : null;
+    }
+
+    /**
      * @return array
      */
     public function getAll()

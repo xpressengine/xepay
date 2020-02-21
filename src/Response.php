@@ -39,6 +39,11 @@ interface Response
     public function amount();
 
     /**
+     * @return string|null
+     */
+    public function message();
+
+    /**
      * @return array
      */
     public function getAll();

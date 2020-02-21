@@ -70,6 +70,14 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return null|string
+     */
+    public function message()
+    {
+        return null;
+    }
+
+    /**
      * @return array
      */
     public function getAll()

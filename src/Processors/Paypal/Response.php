@@ -70,6 +70,14 @@ class Response implements ResponseInterface
     }
 
     /**
+     * @return null|string
+     */
+    public function message()
+    {
+        return $this->fails() ? $this->payment->getFailureReason() : null;
+    }
+
+    /**
      * @return array
      */
     public function getAll()

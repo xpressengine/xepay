@@ -134,7 +134,8 @@ class Gateway
             throw new \Exception('Not exists the log for cancel');
         }
 
-        $money = $money && !$money instanceof Money ? Money::KRW($money) : $money;
+
+        $money = $money && !$money instanceof Money ? new Money($money, $order->getCurrency()) : $money;
 
         $response = $this->pg->cancel($order, $message, $log->response, $money, $transactionId);
 
