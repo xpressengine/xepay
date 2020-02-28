@@ -138,7 +138,7 @@ class Paypal extends Processor
      * @param Response $response
      * @return Response
      */
-    public function rollback(Response $response)
+    public function rollback(Response $response, Order $order)
     {
         $request = new RefundRequest();
 

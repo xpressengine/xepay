@@ -77,6 +77,11 @@ class Response implements ResponseInterface
         return $this->fails() ? $this->payment->getFailureReason() : null;
     }
 
+    public function isPending()
+    {
+        return false;
+    }
+
     /**
      * @return array
      */

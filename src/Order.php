@@ -15,9 +15,14 @@ interface Order
     public function getOrderTitle();
 
     /**
-     * @return int
+     * @return float
      */
     public function getAmount();
+
+    /**
+     * @return float
+     */
+    public function getRefundedAmount();
 
     /**
      * @return string
@@ -34,9 +39,23 @@ interface Order
      */
     public function getTransactionId();
 
+    /**
+     * @return string|null
+     */
+    public function getPayMethod();
+
+    /**
+     * @return string
+     */
     public function getPayerName();
 
+    /**
+     * @return string
+     */
     public function getPayerEmail();
 
+    /**
+     * @return string
+     */
     public function getPayerPhone();
 }

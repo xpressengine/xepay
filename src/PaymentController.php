@@ -4,7 +4,6 @@ namespace Xehub\Xepay;
 use Xehub\Xepay\Exceptions\PaymentFailedException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -33,22 +32,14 @@ class PaymentController extends Controller
             abort(404);
         }
 
-        DB::beginTransaction();
         try {
             $gateway->approve($request, $order);
-            DB::commit();
         } catch (PaymentFailedException $e) {
-            DB::rollBack();
-
             if (!$response = $redirector->redirectToFail($order)) {
                 throw $e;
             }
 
             return $response;
-
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            throw $e;
         }
 
         return $redirector->redirectToComplete($order);

@@ -9,7 +9,7 @@ abstract class Processor implements PayProcess
 
     protected $methods = [];
 
-    protected $instances = [];
+    protected $pendings = [];
 
     public function getMethods()
     {

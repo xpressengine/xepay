@@ -82,6 +82,11 @@ class Response implements ResponseInterface
         return null;
     }
 
+    public function isPending()
+    {
+        return false;
+    }
+
     /**
      * @return array
      */

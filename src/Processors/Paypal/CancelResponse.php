@@ -80,6 +80,11 @@ class CancelResponse implements \Xehub\Xepay\Response
         return $this->fails() ? 'Refunding fail..' : null;
     }
 
+    public function isPending()
+    {
+        return false;
+    }
+
     /**
      * @return array
      */

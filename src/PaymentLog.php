@@ -21,6 +21,8 @@ class PaymentLog extends Model
 
     const TYPE_CANCEL = 'cancel';
 
+    const TYPE_MISC = 'misc';
+
     public static function boot()
     {
         parent::boot();

@@ -41,9 +41,10 @@ interface PayProcess
 
     /**
      * @param Response $response
+     * @param Order $order
      * @return Response
      */
-    public function rollback(Response $response);
+    public function rollback(Response $response, Order $order);
 
     /**
      * @param Order       $order

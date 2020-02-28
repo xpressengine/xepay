@@ -29,7 +29,7 @@ interface Response
     public function payMethod();
 
     /**
-     * @return string
+     * @return string|null
      */
     public function currency();
 
@@ -42,6 +42,11 @@ interface Response
      * @return string|null
      */
     public function message();
+
+    /**
+     * @return bool
+     */
+    public function isPending();
 
     /**
      * @return array

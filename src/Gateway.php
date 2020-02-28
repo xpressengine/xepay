@@ -2,6 +2,7 @@
 namespace Xehub\Xepay;
 
 use Illuminate\Foundation\Http\Events\RequestHandled;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Xehub\Xepay\Events\Paid;
 use Xehub\Xepay\Events\PaymentRolledBack;
@@ -51,7 +52,7 @@ class Gateway
             $this->pg->setOrder($order);
         }
 
-        $this->createLog(PaymentLog::TYPE_PAY, $this->response = $this->pg->approve($request));
+        $this->createLog($order, PaymentLog::TYPE_PAY, $this->response = $this->pg->approve($request));
 
         $this->updateOrder($order, $this->response);
 
@@ -74,7 +75,7 @@ class Gateway
         return $this->pg->render($order, $data, $money);
     }
 
-    protected function createLog($type, Response $response, PaymentLog $parent = null)
+    protected function createLog(Order $order, $type, Response $response, PaymentLog $parent = null)
     {
         $log = new PaymentLog();
         $log->fill([
@@ -83,7 +84,7 @@ class Gateway
             'tid' => $response->transactionId(),
             'type' => $type,
             'method' => $response->payMethod(),
-            'currency' => $response->currency(),
+            'currency' => $response->currency() ?: $order->getCurrency(),
             'amount' => $response->amount(),
             'success' => $response->success(),
             'response' => $response->getAll(),
@@ -95,7 +96,7 @@ class Gateway
         return $log->save();
     }
 
-    public function rollback()
+    public function rollback(Order $order)
     {
         $log = PaymentLog::paid()->succeeded()
             ->byPg($this->getName())
@@ -107,15 +108,15 @@ class Gateway
             throw new \Exception('Not exists the log for cancel');
         }
 
-        $response = $this->pg->rollback($this->response);
+        $response = $this->pg->rollback($this->response, $order);
 
         static::getEventDispatcher()->dispatch(new PaymentRolledBack($response, $log));
 
         // rollback 처리는 결제가 성공한 후 비지니스로직을 처리하다 오류가 발생하는 경우 수행됨.
         // 일반적으로 transaction 을 사용하여 데이터 저장처리를 수행하므로, 오류발생시 로그기록 또한
         // 저장되지 않을수 있음. lifecycle 이 종료되는 시점에 로그를 기록하게 하여 이 문제를 해결.
-        static::getEventDispatcher()->listen(RequestHandled::class, function () use ($response, $log) {
-            $this->createLog(PaymentLog::TYPE_ROLLBACK, $response, $log);
+        static::getEventDispatcher()->listen(RequestHandled::class, function () use ($order, $response, $log) {
+            $this->createLog($order, PaymentLog::TYPE_ROLLBACK, $response, $log);
         });
 
         return $response;
@@ -139,7 +140,7 @@ class Gateway
 
         $response = $this->pg->cancel($order, $message, $log->response, $money, $transactionId);
 
-        $this->createLog(PaymentLog::TYPE_CANCEL, $response, $log);
+        $this->createLog($order, PaymentLog::TYPE_CANCEL, $response, $log);
 
         return $response;
     }
@@ -158,15 +159,18 @@ class Gateway
             throw new PaymentFailedException();
         }
 
+        DB::beginTransaction();
         try {
             static::getEventDispatcher()->dispatch(new Paid($order, $response, $this));
 
-            $provider->success($order);
-        } catch (\Exception $e) {
-            $this->rollback();
-            throw $e;
+            $provider->success($order, $response->isPending());
+
+            DB::commit();
         } catch (\Throwable $e) {
-            $this->rollback();
+            DB::rollBack();
+
+            $this->rollback($order);
+
             throw $e;
         }
 
@@ -179,7 +183,25 @@ class Gateway
             throw new NotFoundHttpException();
         }
 
-        return $this->pg->misc($request);
+        $response = $this->pg->misc($request);
+
+        if (!$response instanceof Response) {
+            return $response;
+        }
+
+        if (!$order = $this->getOrder($response->orderId())) {
+            abort(404);
+        }
+
+        $this->createLog($order, PaymentLog::TYPE_MISC, $response);
+
+        $this->updateOrder($order, $response);
+
+        if (method_exists($response, 'miscResponse')) {
+            return $response->miscResponse();
+        }
+
+        return true;
     }
 
     public function getName()
