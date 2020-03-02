@@ -204,6 +204,21 @@ class Gateway
         return true;
     }
 
+    public function getNotiInfo(Order $order, $transactionId = null)
+    {
+        $log = PaymentLog::paid()->succeeded()
+            ->byPg($this->getName())
+            ->byOid($order->getOrderId())
+            ->byTid($transactionId ?: $order->getTransactionId())
+            ->first();
+
+        if (!$log || !method_exists($this->pg, 'getNotiInfo')) {
+            return null;
+        }
+
+        return $this->pg->getNotiInfo($log->response);
+    }
+
     public function getName()
     {
         return $this->name;

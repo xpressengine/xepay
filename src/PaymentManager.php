@@ -28,12 +28,14 @@ class PaymentManager
      * @param string $name
      * @return Gateway
      */
-    public function gateway($name)
+    public function gateway($name, $force = false)
     {
-        if ($this->isTest()) {
-            $name = 'test';
-        } elseif ($name === 'test') {
-            throw new InvalidArgumentException("PG [$name] not supported.");
+        if (!$force) {
+            if ($this->isTest()) {
+                $name = 'test';
+            } elseif ($name === 'test') {
+                throw new InvalidArgumentException("PG [$name] not supported.");
+            }
         }
 
         if (!isset($this->gateways[$name])) {

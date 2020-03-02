@@ -9,8 +9,6 @@ abstract class Processor implements PayProcess
 
     protected $methods = [];
 
-    protected $pendings = [];
-
     public function getMethods()
     {
         return $this->methods;
