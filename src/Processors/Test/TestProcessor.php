@@ -10,8 +10,6 @@ use Illuminate\View\View;
 
 class TestProcessor extends Processor
 {
-    protected $order;
-
     protected $methods = [
         'card' => '카드',
     ];
@@ -61,20 +59,20 @@ class TestProcessor extends Processor
     }
 
     /**
+     * @param Order $order
      * @param Request $request
      * @return Response
      */
-    public function approve(Request $request)
+    public function approve(Order $order, Request $request)
     {
-        return new \Xehub\Xepay\Processors\Test\Response($this->order, $request->get('_payment_amount'));
+        return new \Xehub\Xepay\Processors\Test\Response($order, $request->get('_payment_amount'));
     }
 
     /**
      * @param Response $response
-     * @param Order $order
      * @return Response
      */
-    public function rollback(Response $response, Order $order)
+    public function rollback(Response $response)
     {
         return $response;
     }
@@ -90,12 +88,5 @@ class TestProcessor extends Processor
     public function cancel(Order $order, $message, array $data, Money $money = null, $transactionId = null)
     {
         return new \Xehub\Xepay\Processors\Test\Response($order, $money ? $money->getAmount() : $order->getAmount());
-    }
-
-    public function setOrder(Order $order)
-    {
-        $this->order = $order;
-
-        return $this;
     }
 }

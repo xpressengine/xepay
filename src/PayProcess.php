@@ -34,17 +34,17 @@ interface PayProcess
     public function callback(Request $request);
 
     /**
+     * @param Order $order
      * @param Request $request
      * @return Response
      */
-    public function approve(Request $request);
+    public function approve(Order $order, Request $request);
 
     /**
      * @param Response $response
-     * @param Order $order
      * @return Response
      */
-    public function rollback(Response $response, Order $order);
+    public function rollback(Response $response);
 
     /**
      * @param Order       $order

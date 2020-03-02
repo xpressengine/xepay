@@ -11,8 +11,6 @@ use Illuminate\View\View;
 
 class ZeroProcessor extends Processor
 {
-    protected $order;
-
     /**
      * @return mixed
      */
@@ -62,21 +60,22 @@ class ZeroProcessor extends Processor
     }
 
     /**
+     * @param Order $order
      * @param Request $request
      * @return Response
      */
-    public function approve(Request $request)
+    public function approve(Order $order, Request $request)
     {
-        $tokenName = $this->getTokenName($this->order);
+        $tokenName = $this->getTokenName($order);
         $proof = $request->get('_payment_token', 0) === $request->session()->get($tokenName, 1);
-        return new \Xehub\Xepay\Processors\Zero\Response($this->order, $proof);
+        return new \Xehub\Xepay\Processors\Zero\Response($order, $proof);
     }
 
     /**
      * @param Response $response
      * @return Response
      */
-    public function rollback(Response $response, Order $order)
+    public function rollback(Response $response)
     {
         return $response;
     }
@@ -92,12 +91,5 @@ class ZeroProcessor extends Processor
     public function cancel(Order $order, $message, array $data, Money $money = null, $transactionId = null)
     {
         return new \Xehub\Xepay\Processors\Zero\Response($order, true);
-    }
-
-    public function setOrder(Order $order)
-    {
-        $this->order = $order;
-
-        return $this;
     }
 }

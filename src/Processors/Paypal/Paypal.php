@@ -119,10 +119,11 @@ class Paypal extends Processor
     }
 
     /**
+     * @param Order $order
      * @param Request $request
      * @return Response
      */
-    public function approve(Request $request)
+    public function approve(Order $order, Request $request)
     {
         $payment = PaypalPayment::get($request->get('paymentId'), $this->context);
 
@@ -138,7 +139,7 @@ class Paypal extends Processor
      * @param Response $response
      * @return Response
      */
-    public function rollback(Response $response, Order $order)
+    public function rollback(Response $response)
     {
         $request = new RefundRequest();
 

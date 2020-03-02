@@ -29,7 +29,7 @@ interface Response
     public function payMethod();
 
     /**
-     * @return string|null
+     * @return string
      */
     public function currency();
 
