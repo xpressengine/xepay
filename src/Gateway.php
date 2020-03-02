@@ -212,7 +212,7 @@ class Gateway
             return null;
         }
 
-        return $this->pg->getNotiInfo($log->response);
+        return $this->pg->getNotiInfo($order, $log->response);
     }
 
     public function getName()
