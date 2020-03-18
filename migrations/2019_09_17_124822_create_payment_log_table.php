@@ -21,7 +21,7 @@ class CreatePaymentLogTable extends Migration
             $table->string('type', 100);
             $table->string('method')->nullable();
             $table->string('currency', 10);
-            $table->float('amount');
+            $table->float('amount', 10);
             $table->boolean('success')->default(0);
             $table->text('response');
             $table->bigInteger('parent_id')->nullable()->unsigned();
