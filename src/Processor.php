@@ -11,6 +11,10 @@ abstract class Processor implements PayProcess
 
     public function getMethods()
     {
+        if (method_exists($this, 'enabledMethods')) {
+           return array_intersect_key($this->methods, array_flip($this->enabledMethods()));
+        }
+
         return $this->methods;
     }
 
