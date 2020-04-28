@@ -1,9 +1,11 @@
 <?php
 namespace Xehub\Xepay;
 
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Xehub\Xepay\Exceptions\PaymentFailedException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Xehub\Xepay\Exceptions\UnableMakePaymentException;
 
 class PaymentController extends Controller
 {
@@ -14,7 +16,11 @@ class PaymentController extends Controller
             abort(404);
         }
 
-        return $gateway->render($order, $request->except('_token'));
+        try {
+            return $gateway->render($order, $request->except('_token'));
+        } catch (UnableMakePaymentException $e) {
+            throw new HttpException(400, $e->getMessage());
+        }
     }
 
     public function callback(Request $request, PaymentManager $payment, $pg)
