@@ -32,11 +32,12 @@
     }
   };
 
-  var prepare = function (name, params, callback) {
+  var prepare = function (name, method, params, callback) {
     if (typeof params === 'object' && params !== null) {
       params['_pg'] = name;
+      params['_pay_method'] = method;
     } else {
-      params += (params !== '' ? '&':'') + '_pg='+name;
+      params += (params !== '' ? '&':'') + '_pg='+name+'&_pay_method='+method;
     }
     $.ajax({
       type: 'post',
@@ -76,7 +77,7 @@
         var arr = method.split(':');
         var gatewayName = arr[0];
         method = arr[1];
-        prepare(gatewayName, params, function () {
+        prepare(gatewayName, method, params, function () {
 
           events.fire('executing');
 
