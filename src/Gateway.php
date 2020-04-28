@@ -133,6 +133,9 @@ class Gateway
 
 
         $money = $money && !$money instanceof Money ? new Money($money, $order->getCurrency()) : $money;
+        if (!$money) {
+            $money = new Money($log->amount, $log->currency);
+        }
 
         $response = $this->pg->cancel($order, $message, $log->response, $money, $transactionId);
 
