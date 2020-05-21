@@ -10,10 +10,13 @@ class Response implements ResponseInterface
 
     protected $amount;
 
-    public function __construct(Order $order, $amount)
+    protected $currency;
+
+    public function __construct(Order $order, $amount, $currency)
     {
         $this->order = $order;
         $this->amount = $amount;
+        $this->currency = $currency;
     }
 
     /**
@@ -58,7 +61,7 @@ class Response implements ResponseInterface
 
     public function currency()
     {
-        return 'KRW';
+        return $this->currency;
     }
 
     /**

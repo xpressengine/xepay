@@ -32,10 +32,13 @@ class TestProcessor extends Processor
      */
     public function render(Order $order, $data = [], Money $money = null)
     {
-//        $money = $money ?: Money::KRW($order->getAmount());
         $money = $money ?: new Money($order->getAmount(), $order->getCurrency());
-        $amount = $this->exchangeMoney($money, 'KRW')->getAmount();
-        return $this->getView('xepay::test.form', compact('order', 'data', 'amount'));
+        return $this->getView('xepay::test.form', [
+            'order' => $order,
+            'data' => $data,
+            'amount' => $money->getAmount(),
+            'currency' => $money->getCurrency()
+        ]);
     }
 
     /**
@@ -65,7 +68,11 @@ class TestProcessor extends Processor
      */
     public function approve(Order $order, Request $request)
     {
-        return new \Xehub\Xepay\Processors\Test\Response($order, $request->get('_payment_amount'));
+        return new \Xehub\Xepay\Processors\Test\Response(
+            $order,
+            $request->get('_payment_amount'),
+            $request->get('_payment_currency')
+        );
     }
 
     /**
@@ -87,6 +94,10 @@ class TestProcessor extends Processor
      */
     public function cancel(Order $order, $message, array $data, Money $money = null, $transactionId = null)
     {
-        return new \Xehub\Xepay\Processors\Test\Response($order, $money ? $money->getAmount() : $order->getAmount());
+        return new \Xehub\Xepay\Processors\Test\Response(
+            $order,
+            $money ? $money->getAmount() : $order->getAmount(),
+            $money ? $money->getCurrency() : $order->getCurrency()
+        );
     }
 }
