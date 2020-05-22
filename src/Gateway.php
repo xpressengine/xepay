@@ -132,7 +132,7 @@ class Gateway
         }
 
 
-        $money = $money && !$money instanceof Money ? new Money($money, $order->getCurrency()) : $money;
+        $money = $money && !$money instanceof Money ? new Money($money, $log->currency) : $money;
         if (!$money) {
             $money = new Money($log->amount, $log->currency);
         }
